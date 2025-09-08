@@ -16,7 +16,7 @@ public class Guest {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
-    private Long id;
+    private String id;
 
     @Column(unique = true, nullable = false)
     private String inviteToken;
@@ -43,6 +43,9 @@ public class Guest {
 
     private Integer clickCount = 0;
 
+    @Enumerated(EnumType.STRING)
+    private Squad squad;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -52,5 +55,8 @@ public class Guest {
         ACCEPTED,
         DECLINED,
         LINK_CLICKED
+    }
+    public enum Squad{
+        BRIDE, GROOM
     }
 }

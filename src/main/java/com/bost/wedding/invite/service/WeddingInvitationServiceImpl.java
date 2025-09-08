@@ -21,7 +21,7 @@ public class WeddingInvitationServiceImpl implements WeddingInvitationService{
     private final GuestRepository guestRepository;
     private final SeatAssignmentService seatAssignmentService;
     private final InvitationCardService invitationCardService;
-    @Value("${wedding.invitation.base-url:http://localhost:8080}")
+    @Value("${wedding.invitation.base-url:http://localhost:1221}")
     private String baseUrl;
     @Override
     public List<String> generateInvitationLinks(int numberOfGuests) {
@@ -68,12 +68,15 @@ public class WeddingInvitationServiceImpl implements WeddingInvitationService{
         Guest guest = guestRepository.findByInviteToken(inviteToken)
                 .orElseThrow(() -> new RuntimeException("Invalid invitation token"));
 
+        if(guest.getClickCount() > 1 && !guest.getStatus().equals(Guest.InviteStatus.PENDING)){
+            throw new RuntimeException("Invite link already used by YOU");
+        }
         guest.setGuestName(request.getGuestName());
         guest.setEmail(request.getEmail());
         guest.setPhoneNumber(request.getPhoneNumber());
         guest.setDietaryRestrictions(request.getDietaryRestrictions());
-        guest.setPlusOneDetails(request.getPlusOneDetails());
         guest.setRespondedAt(LocalDateTime.now());
+        guest.setSquad(request.getSquad());
 
         if ("accept".equalsIgnoreCase(request.getResponse())) {
             guest.setStatus(Guest.InviteStatus.ACCEPTED);
@@ -95,6 +98,7 @@ public class WeddingInvitationServiceImpl implements WeddingInvitationService{
                     .invitationCardUrl(cardUrl)
                     .status("ACCEPTED")
                     .guestName(request.getGuestName())
+                    .squad(guest.getSquad())
                     .build();
 
         } else {
@@ -113,7 +117,7 @@ public class WeddingInvitationServiceImpl implements WeddingInvitationService{
 
     @Override
     public GuestDto.InvitationReport getInvitationReport() {
-        Long total = guestRepository.count();
+        long total = guestRepository.count();
         Long accepted = guestRepository.countByStatus(Guest.InviteStatus.ACCEPTED);
         Long declined = guestRepository.countByStatus(Guest.InviteStatus.DECLINED);
         Long pending = guestRepository.countByStatus(Guest.InviteStatus.PENDING);

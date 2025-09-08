@@ -50,54 +50,54 @@ public class InvitationCardService {
                 <meta charset="UTF-8">
                 <title>Wedding Invitation - %s</title>
                 <style>
-                    body { 
-                        font-family: 'Georgia', serif; 
+                    body {
+                        font-family: 'Georgia', serif;
                         background: linear-gradient(135deg, #f5f7fa 0%%, #c3cfe2 100%%);
-                        margin: 0; 
-                        padding: 20px; 
-                        display: flex; 
-                        justify-content: center; 
-                        align-items: center; 
-                        min-height: 100vh; 
+                        margin: 0;
+                        padding: 20px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        min-height: 100vh;
                     }
-                    .invitation-card { 
-                        background: white; 
-                        padding: 40px; 
-                        border-radius: 15px; 
-                        box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
-                        text-align: center; 
-                        max-width: 500px; 
-                        border: 3px solid #d4af37; 
+                    .invitation-card {
+                        background: white;
+                        padding: 40px;
+                        border-radius: 15px;
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                        text-align: center;
+                        max-width: 500px;
+                        border: 3px solid #d4af37;
                     }
-                    .bride-groom { 
-                        font-size: 28px; 
-                        color: #d4af37; 
-                        margin-bottom: 20px; 
-                        font-weight: bold; 
+                    .bride-groom {
+                        font-size: 28px;
+                        color: #d4af37;
+                        margin-bottom: 20px;
+                        font-weight: bold;
                     }
-                    .guest-name { 
-                        font-size: 24px; 
-                        color: #2c3e50; 
-                        margin: 20px 0; 
-                        font-style: italic; 
+                    .guest-name {
+                        font-size: 24px;
+                        color: #2c3e50;
+                        margin: 20px 0;
+                        font-style: italic;
                     }
-                    .wedding-details { 
-                        font-size: 16px; 
-                        color: #34495e; 
-                        margin: 20px 0; 
-                        line-height: 1.6; 
+                    .wedding-details {
+                        font-size: 16px;
+                        color: #34495e;
+                        margin: 20px 0;
+                        line-height: 1.6;
                     }
-                    .seat-info { 
-                        background: #f8f9fa; 
-                        padding: 15px; 
-                        border-radius: 8px; 
-                        margin: 20px 0; 
-                        border-left: 4px solid #d4af37; 
+                    .seat-info {
+                        background: #f8f9fa;
+                        padding: 15px;
+                        border-radius: 8px;
+                        margin: 20px 0;
+                        border-left: 4px solid #d4af37;
                     }
-                    .footer { 
-                        font-size: 12px; 
-                        color: #7f8c8d; 
-                        margin-top: 30px; 
+                    .footer {
+                        font-size: 12px;
+                        color: #7f8c8d;
+                        margin-top: 30px;
                     }
                 </style>
             </head>
@@ -109,8 +109,8 @@ public class InvitationCardService {
                     <div class="wedding-details">
                         <p><strong>Date:</strong> December 21, 2025</p>
                         <p><strong>Time:</strong> 10:00 AM</p>
-                        <p><strong>Venue:</strong> Grand Ballroom, City Hotel</p>
-                        <p><strong>Address:</strong> 123 Opebi Street, City, State</p>
+                        <p><strong>Venue:</strong>Advans Event Special</p>
+                        <p><strong>Address:</strong> 123 Opebi Street, Ikeja, Lagos State</p>
                     </div>
                     <div class="seat-info">
                         <p><strong>Your Reserved Seat:</strong> %s</p>
@@ -123,7 +123,7 @@ public class InvitationCardService {
             </body>
             </html>
             """,
-                guest.getGuestName(),
+                "Bost & Mo'Sexy",
                 guest.getGuestName(),
                 guest.getSeatNumber(),
                 LocalDateTime.now()

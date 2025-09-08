@@ -1,8 +1,10 @@
 package com.bost.wedding.invite.model;
 
+import com.bost.wedding.invite.entity.Guest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -23,10 +25,12 @@ public class GuestDto {
 
         private String phoneNumber;
         private String dietaryRestrictions;
-        private String plusOneDetails;
 
         @NotBlank(message = "RSVP response is required")
         private String response;
+
+        @NotNull(message = "Squad is required")
+        private Guest.Squad squad;
     }
     @Getter
     @Setter
@@ -40,6 +44,7 @@ public class GuestDto {
         private String invitationCardUrl;
         private String status;
         private String guestName;
+        private Guest.Squad squad;
     }
     @Getter
     @Setter

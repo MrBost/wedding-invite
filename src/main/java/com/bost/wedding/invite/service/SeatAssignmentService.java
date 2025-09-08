@@ -11,20 +11,22 @@ public class SeatAssignmentService {
     private final GuestRepository guestRepository;
 
     public String assignSeat(Guest guest) {
-        String seatNumber;
-        int attempts = 0;
+        String prefix = guest.getSquad().equals(Guest.Squad.BRIDE) ? "B" : "G";
+        int maxSeatsPerSquad = 50; //5 tables × 10 seats
+        int seatsPerTable = 10;
 
-        do {
-            int tableNumber = (attempts / 10) + 1; // 8 seats per table
-            int seatAtTable = (attempts % 10) + 1;
-            seatNumber = String.format("T%d-S%d", tableNumber, seatAtTable);
-            attempts++;
-        } while (guestRepository.existsBySeatNumber(seatNumber) && attempts < 1000);
+        for (int attempt = 0; attempt < maxSeatsPerSquad; attempt++) {
+            int tableNumber = (attempt / seatsPerTable) + 1;
+            int seatAtTable = (attempt % seatsPerTable) + 1;
 
-        if (attempts >= 1000) {
-            throw new RuntimeException("Unable to assign seat - venue full");
+            String seatNumber = String.format("%s%d-S%d", prefix, tableNumber, seatAtTable);
+
+            if (!guestRepository.existsBySeatNumber(seatNumber)) {
+                return seatNumber;
+            }
         }
 
-        return seatNumber;
+        throw new RuntimeException("Unable to assign seat - all seats for squad " + guest.getSquad() + " are full");
     }
+
 }
