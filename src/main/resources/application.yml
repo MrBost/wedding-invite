@@ -22,7 +22,7 @@ server:
 
 wedding:
   invitation:
-    base-url: ${INVITE_URL:http://localhost:2714}
+    base-url: ${INVITE_URL:https://wedding-invite-zxks.onrender.com}
     card:
       template-path: ./templates
       output-path: ./generated-cards
