@@ -68,7 +68,7 @@ public class WeddingInvitationServiceImpl implements WeddingInvitationService{
         Guest guest = guestRepository.findByInviteToken(inviteToken)
                 .orElseThrow(() -> new RuntimeException("Invalid invitation token"));
 
-        if(guest.getClickCount() > 1 && !guest.getStatus().equals(Guest.InviteStatus.PENDING)){
+        if(guest.getStatus().equals(Guest.InviteStatus.ACCEPTED) || guest.getStatus().equals(Guest.InviteStatus.DECLINED)){
             throw new RuntimeException("Invite link already used by YOU");
         }
         guest.setGuestName(request.getGuestName());
