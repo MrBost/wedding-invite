@@ -17,10 +17,11 @@ import org.springframework.web.bind.annotation.*;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/wedding")
+@RequestMapping("/api/v1/invite")
 @RequiredArgsConstructor
 @Validated
 @Slf4j
@@ -36,9 +37,22 @@ public class WeddingInvitationController {
 
         return ResponseEntity.ok(inviteLinks);
     }
-
-    @GetMapping("/invite/{token}")
-    public ResponseEntity<String> handleInviteClick(@PathVariable String token) {
+//    @GetMapping("/invite/{token}")
+//    public String handleInviteClick(@PathVariable String token, Model model) {
+//        try {
+//            Guest guest = invitationService.trackLinkClick(token);
+//
+//            model.addAttribute("guest", guest);
+//            model.addAttribute("token", token);
+//
+//            return "rsvp";
+//        } catch (RuntimeException e) {
+//            model.addAttribute("error", "Invalid Invitation Link");
+//            return "error";
+//        }
+//    }
+    @GetMapping("/invitex/{token}")
+    public ResponseEntity<String> handleInviteClickx(@PathVariable String token) {
         try {
             Guest guest = invitationService.trackLinkClick(token);
 
@@ -72,8 +86,10 @@ public class WeddingInvitationController {
         }
     }
     @GetMapping("/squads")
-    public Guest.Squad[] getSquads() {
-        return Guest.Squad.values();
+    public List<String> getSquads() {
+        return Arrays.stream(Guest.Squad.values())
+                .map(Enum::name)
+                .toList();
     }
     @GetMapping("/report")
     public ResponseEntity<GuestDto.InvitationReport> getInvitationReport() {
@@ -105,6 +121,7 @@ public class WeddingInvitationController {
             return ResponseEntity.badRequest().build();
         }
     }
+
     private String generateRSVPForm(String token, Guest guest) {
         return String.format("""
                 <!DOCTYPE html>

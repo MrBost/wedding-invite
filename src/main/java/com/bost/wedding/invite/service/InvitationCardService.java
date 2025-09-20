@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @Slf4j
@@ -32,7 +33,7 @@ public class InvitationCardService {
             Path cardPath = outputDir.resolve(fileName);
             Files.writeString(cardPath, cardHtml);
 
-            String cardUrl = "/api/v1/wedding/cards/" + fileName;
+            String cardUrl = "/api/v1/invite/cards/" + fileName;
             log.info("Generated invitation card for {}: {}", guest.getGuestName(), cardUrl);
 
             return cardUrl;
@@ -43,90 +44,190 @@ public class InvitationCardService {
         }
     }
     private String generateCardHtml(Guest guest) {
+        String safeGuestName = guest.getGuestName()
+                .trim()
+                .replaceAll("[^a-zA-Z0-9]", "_");
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy hh:mm a");
+        String formattedDate = LocalDateTime.now().format(formatter);
+
         return String.format("""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <title>Wedding Invitation - %s</title>
-                <style>
-                    body {
-                        font-family: 'Georgia', serif;
-                        background: linear-gradient(135deg, #f5f7fa 0%%, #c3cfe2 100%%);
-                        margin: 0;
-                        padding: 20px;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        min-height: 100vh;
-                    }
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Wedding Invitation - %s</title>
+            <style>
+                body {
+                    font-family: 'Cormorant Garamond', serif;
+                    background: #fdfcfb;
+                    margin: 0;
+                    padding: 20px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 100vh;
+                }
+                .invitation-card {
+                    background: #fff;
+                    padding: 50px 30px;
+                    border-radius: 20px;
+                    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+                    max-width: 650px;
+                    width: 100%%;
+                    text-align: center;
+                    border: 6px double #d4af37;
+                    position: relative;
+                    overflow: hidden;
+                }
+                /* Floral borders (corner decorations) */
+                .invitation-card::before,
+                .invitation-card::after {
+                    content: "";
+                    position: absolute;
+                    width: 120px;
+                    height: 120px;
+                    background: url('/images/floral-corner.png') no-repeat center/contain;
+                    z-index: 0;
+                }
+                .invitation-card::before {
+                    top: -10px;
+                    left: -10px;
+                }
+                .invitation-card::after {
+                    bottom: -10px;
+                    right: -10px;
+                    transform: rotate(180deg);
+                }
+                .header {
+                    font-family: 'Great Vibes', cursive;
+                    font-size: 48px;
+                    color: #d4af37;
+                    margin-bottom: 15px;
+                    z-index: 1;
+                    position: relative;
+                }
+                .couple {
+                    font-size: 30px;
+                    color: #2c3e50;
+                    margin-bottom: 20px;
+                    position: relative;
+                    z-index: 1;
+                }
+                .guest-name {
+                    font-size: 24px;
+                    margin: 20px 0;
+                    font-style: italic;
+                    color: #34495e;
+                    z-index: 1;
+                    position: relative;
+                }
+                .wedding-details {
+                    font-size: 18px;
+                    line-height: 1.8;
+                    color: #2c3e50;
+                    margin: 20px 0;
+                    z-index: 1;
+                    position: relative;
+                }
+                .seat-info {
+                    margin: 25px 0;
+                    padding: 15px;
+                    background: #faf3e0;
+                    border: 1px solid #d4af37;
+                    border-radius: 10px;
+                    font-size: 20px;
+                    font-weight: bold;
+                    color: #8e6e3d;
+                    z-index: 1;
+                    position: relative;
+                }
+                .footer {
+                    font-size: 14px;
+                    margin-top: 30px;
+                    color: #7f8c8d;
+                    z-index: 1;
+                    position: relative;
+                }
+                /* Responsive tweaks */
+                @media (max-width: 600px) {
                     .invitation-card {
-                        background: white;
-                        padding: 40px;
-                        border-radius: 15px;
-                        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-                        text-align: center;
-                        max-width: 500px;
-                        border: 3px solid #d4af37;
+                        padding: 25px 15px;
+                        font-size: 90%%;
                     }
-                    .bride-groom {
-                        font-size: 28px;
-                        color: #d4af37;
-                        margin-bottom: 20px;
-                        font-weight: bold;
+                    .header {
+                        font-size: 32px;
                     }
-                    .guest-name {
-                        font-size: 24px;
-                        color: #2c3e50;
-                        margin: 20px 0;
-                        font-style: italic;
+                    .couple {
+                        font-size: 22px;
                     }
-                    .wedding-details {
-                        font-size: 16px;
-                        color: #34495e;
-                        margin: 20px 0;
-                        line-height: 1.6;
-                    }
-                    .seat-info {
-                        background: #f8f9fa;
-                        padding: 15px;
-                        border-radius: 8px;
-                        margin: 20px 0;
-                        border-left: 4px solid #d4af37;
-                    }
-                    .footer {
-                        font-size: 12px;
-                        color: #7f8c8d;
-                        margin-top: 30px;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="invitation-card">
-                    <div class="bride-groom">Bost & Mo'Sexy</div>
-                    <h2>cordially invite</h2>
-                    <div class="guest-name">%s</div>
-                    <div class="wedding-details">
-                        <p><strong>Date:</strong> December 21, 2025</p>
-                        <p><strong>Time:</strong> 10:00 AM</p>
-                        <p><strong>Venue:</strong>Advans Event Special</p>
-                        <p><strong>Address:</strong> 123 Opebi Street, Ikeja, Lagos State</p>
-                    </div>
-                    <div class="seat-info">
-                        <p><strong>Your Reserved Seat:</strong> %s</p>
-                    </div>
-                    <p>We can't wait to celebrate with you!</p>
-                    <div class="footer">
-                        <p>Generated on: %s</p>
-                    </div>
+                }
+                .download-btn {
+                    margin-top: 20px;
+                    padding: 12px 20px;
+                    font-size: 16px;
+                    font-weight: bold;
+                    border: none;
+                    border-radius: 8px;
+                    background: #d4af37;
+                    color: white;
+                    cursor: pointer;
+                    transition: background 0.3s ease;
+                    z-index: 1;
+                    position: relative;
+                }
+                .download-btn:hover {
+                    background: #b4942f;
+                }
+            </style>
+            <!-- Google Fonts -->
+            <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Great+Vibes&display=swap" rel="stylesheet">
+        </head>
+        <body>
+            <div class="invitation-card" id="invitationCard">
+                <div class="header">Wedding Invitation</div>
+                <div class="couple">%s</div>
+                <h3>cordially invite</h3>
+                <div class="guest-name">%s</div>
+                <div class="wedding-details">
+                    <p><strong>Date:</strong> December 20, 2025</p>
+                    <p><strong>Time:</strong> 10:00 AM</p>
+                    <p><strong>Venue:</strong> Advans Event Special</p>
+                    <p><strong>Address:</strong> 123 Opebi Street, Ikeja, Lagos State</p>
                 </div>
-            </body>
-            </html>
-            """,
-                "Bost & Mo'Sexy",
+                <div class="seat-info">
+                   Your Reserved Seat: %s
+                </div>
+                <p>We can't wait to celebrate with you!</p>
+                <div class="footer">
+                <p><strong>Admission by invitation card only.<strong></p>
+                    Generated on: %s
+                </div>
+                <button class="download-btn" id="downloadBtn" data-html2canvas-ignore="true">Download Invitation Card</button>
+            </div>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+            <script>
+                document.getElementById("downloadBtn").addEventListener("click", () => {
+                    const card = document.getElementById("invitationCard");
+                    html2canvas(card).then(canvas => {
+                        const link = document.createElement("a");
+                        link.href = canvas.toDataURL("image/png");
+                        link.download = "wedding_invitation_%s.png";
+                        link.click();
+                    });
+                });
+            </script>
+        </body>
+        </html>
+        """,
+                "Oluwaseun & Opeyemi",
+                "Oluwaseun & Opeyemi",
                 guest.getGuestName(),
                 guest.getSeatNumber(),
-                LocalDateTime.now()
+                formattedDate,
+                safeGuestName
         );
     }
+
+
 }

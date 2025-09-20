@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Wedding Invitation - Oluwaseun & Opeyemi</title>
+    <style>
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: #fdfcfb;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .invitation-card {
+            background: #fff;
+            padding: 50px 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            max-width: 650px;
+            width: 100%;
+            text-align: center;
+            border: 6px double #d4af37;
+            position: relative;
+            overflow: hidden;
+        }
+        /* Floral borders (corner decorations) */
+        .invitation-card::before,
+        .invitation-card::after {
+            content: "";
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: url('/images/floral-corner.png') no-repeat center/contain;
+            z-index: 0;
+        }
+        .invitation-card::before {
+            top: -10px;
+            left: -10px;
+        }
+        .invitation-card::after {
+            bottom: -10px;
+            right: -10px;
+            transform: rotate(180deg);
+        }
+        .header {
+            font-family: 'Great Vibes', cursive;
+            font-size: 48px;
+            color: #d4af37;
+            margin-bottom: 15px;
+            z-index: 1;
+            position: relative;
+        }
+        .couple {
+            font-size: 30px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        .guest-name {
+            font-size: 24px;
+            margin: 20px 0;
+            font-style: italic;
+            color: #34495e;
+            z-index: 1;
+            position: relative;
+        }
+        .wedding-details {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #2c3e50;
+            margin: 20px 0;
+            z-index: 1;
+            position: relative;
+        }
+        .seat-info {
+            margin: 25px 0;
+            padding: 15px;
+            background: #faf3e0;
+            border: 1px solid #d4af37;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #8e6e3d;
+            z-index: 1;
+            position: relative;
+        }
+        .footer {
+            font-size: 14px;
+            margin-top: 30px;
+            color: #7f8c8d;
+            z-index: 1;
+            position: relative;
+        }
+        /* Responsive tweaks */
+        @media (max-width: 600px) {
+            .invitation-card {
+                padding: 25px 15px;
+                font-size: 90%;
+            }
+            .header {
+                font-size: 32px;
+            }
+            .couple {
+                font-size: 22px;
+            }
+        }
+        .download-btn {
+            margin-top: 20px;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            background: #d4af37;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            z-index: 1;
+            position: relative;
+        }
+        .download-btn:hover {
+            background: #b4942f;
+        }
+    </style>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Great+Vibes&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="invitation-card" id="invitationCard">
+        <div class="header">Wedding Invitation</div>
+        <div class="couple">Oluwaseun & Opeyemi</div>
+        <h3>cordially invite</h3>
+        <div class="guest-name">Hannah Brown</div>
+        <div class="wedding-details">
+            <p><strong>Date:</strong> December 20, 2025</p>
+            <p><strong>Time:</strong> 10:00 AM</p>
+            <p><strong>Venue:</strong> Advans Event Special</p>
+            <p><strong>Address:</strong> 123 Opebi Street, Ikeja, Lagos State</p>
+        </div>
+        <div class="seat-info">
+           Your Reserved Seat: G1-S6
+        </div>
+        <p>We can't wait to celebrate with you!</p>
+        <div class="footer">
+        <p><strong>Admission by invitation card only.<strong></p>
+            Generated on: September 20, 2025 05:20 pm
+        </div>
+        <button class="download-btn" id="downloadBtn" data-html2canvas-ignore="true">Download Invitation Card</button>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        document.getElementById("downloadBtn").addEventListener("click", () => {
+            const card = document.getElementById("invitationCard");
+            html2canvas(card).then(canvas => {
+                const link = document.createElement("a");
+                link.href = canvas.toDataURL("image/png");
+                link.download = "wedding_invitation_Hannah_Brown.png";
+                link.click();
+            });
+        });
+    </script>
+</body>
+</html>
