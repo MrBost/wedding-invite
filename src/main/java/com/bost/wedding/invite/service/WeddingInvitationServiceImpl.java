@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -24,9 +22,9 @@ public class WeddingInvitationServiceImpl implements WeddingInvitationService{
     @Value("${wedding.invitation.base-url:http://localhost:1221}")
     private String baseUrl;
     @Override
-    public List<String> generateInvitationLinks(int numberOfGuests) {
+    public Map<Integer, String> generateInvitationLinks(int numberOfGuests) {
         List<String> invitationLinks = new ArrayList<>();
-
+        Map<Integer, String> invitationLinkMap = new HashMap<>();
         for (int i = 0; i < numberOfGuests; i++) {
             String token = generateUniqueToken();
             Guest guest = new Guest();
@@ -36,12 +34,13 @@ public class WeddingInvitationServiceImpl implements WeddingInvitationService{
             guestRepository.save(guest);
 
             String inviteLink = baseUrl + "/api/v1/wedding/invite/" + token;
-            invitationLinks.add(inviteLink);
+//            invitationLinks.add(inviteLink);
+            invitationLinkMap.put(i, inviteLink);
 
             log.info("Generated invitation link: {}", inviteLink);
         }
 
-        return invitationLinks;
+        return invitationLinkMap;
     }
 
     @Override
@@ -137,8 +136,18 @@ public class WeddingInvitationServiceImpl implements WeddingInvitationService{
     }
 
     @Override
-    public List<Guest> getAllGuests() {
-        return guestRepository.findAll();
+    public List<GuestDto.Response> getAllGuests() {
+        List<Guest> guests = guestRepository.findAll();
+        return guests.stream().map(
+                guest -> GuestDto.Response.builder()
+                        .squad(guest.getSquad())
+                        .guestName(guest.getGuestName())
+                        .status(guest.getStatus().name())
+                        .seatNumber(guest.getSeatNumber())
+                        .message(guest.getDietaryRestrictions())
+                        .build()
+        ).toList();
+
     }
     private String generateUniqueToken() {
         return UUID.randomUUID().toString().replace("-", "");

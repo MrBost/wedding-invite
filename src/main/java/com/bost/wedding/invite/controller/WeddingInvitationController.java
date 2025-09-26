@@ -15,10 +15,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/invite")
@@ -30,10 +32,10 @@ public class WeddingInvitationController {
     private final WeddingInvitationService invitationService;
 
     @PostMapping("/generate-invites")
-    public ResponseEntity<List<String>> generateInvitations(@RequestParam(defaultValue = "5") int numberOfGuests) {
+    public ResponseEntity<Map<Integer, String>> generateInvitations(@RequestParam(defaultValue = "5") int numberOfGuests) {
 
         log.info("Generating {} wedding invitation links", numberOfGuests);
-        List<String> inviteLinks = invitationService.generateInvitationLinks(numberOfGuests);
+        Map<Integer, String> inviteLinks = invitationService.generateInvitationLinks(numberOfGuests);
 
         return ResponseEntity.ok(inviteLinks);
     }
@@ -98,9 +100,43 @@ public class WeddingInvitationController {
     }
 
     @GetMapping("/guests")
-    public ResponseEntity<List<Guest>> getAllGuests() {
-        List<Guest> guests = invitationService.getAllGuests();
+    public ResponseEntity<List<GuestDto.Response>> getAllGuests() {
+        List<GuestDto.Response> guests = invitationService.getAllGuests();
         return ResponseEntity.ok(guests);
+    }
+    @GetMapping(value = "/guests/export", produces = "text/csv")
+    public ResponseEntity<byte[]> exportGuestsToCsv() {
+        List<GuestDto.Response> guests = invitationService.getAllGuests();
+
+        StringBuilder csvBuilder = new StringBuilder();
+        csvBuilder.append("Guest Name,Seat Number,Status,Squad,Dietary Restrictions\n");
+
+        for (GuestDto.Response guest : guests) {
+            csvBuilder.append(safeCsv(guest.getGuestName())).append(",");
+            csvBuilder.append(safeCsv(guest.getSeatNumber())).append(",");
+            csvBuilder.append(safeCsv(guest.getStatus())).append(",");
+            csvBuilder.append(safeCsv(guest.getSquad() != null ? guest.getSquad().name() : "")).append(",");
+            csvBuilder.append(safeCsv(guest.getMessage())).append("\n");
+        }
+
+        byte[] csvBytes = csvBuilder.toString().getBytes(StandardCharsets.UTF_8);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("text/csv"));
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=guests.csv");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(csvBytes);
+    }
+
+    private String safeCsv(String value) {
+        if (value == null) return "";
+        String escaped = value.replace("\"", "\"\"");
+        if (escaped.contains(",") || escaped.contains("\"") || escaped.contains("\n")) {
+            return "\"" + escaped + "\"";
+        }
+        return escaped;
     }
 
     @GetMapping("/cards/{fileName}")
