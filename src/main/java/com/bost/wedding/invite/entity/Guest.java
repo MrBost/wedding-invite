@@ -22,7 +22,7 @@ public class Guest {
     private String inviteToken;
 
     private String guestName;
-    private String email;
+//    private String email;
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)

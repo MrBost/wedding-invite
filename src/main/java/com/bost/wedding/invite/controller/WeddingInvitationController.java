@@ -21,6 +21,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1/invite")
@@ -32,10 +33,10 @@ public class WeddingInvitationController {
     private final WeddingInvitationService invitationService;
 
     @PostMapping("/generate-invites")
-    public ResponseEntity<Map<Integer, String>> generateInvitations(@RequestParam(defaultValue = "5") int numberOfGuests) {
+    public ResponseEntity<Map<Integer, Object>> generateInvitations(@RequestParam(defaultValue = "5") int numberOfGuests) {
 
         log.info("Generating {} wedding invitation links", numberOfGuests);
-        Map<Integer, String> inviteLinks = invitationService.generateInvitationLinks(numberOfGuests);
+        Map<Integer, Object> inviteLinks = invitationService.generateInvitationLinks(numberOfGuests);
 
         return ResponseEntity.ok(inviteLinks);
     }
@@ -157,8 +158,243 @@ public class WeddingInvitationController {
             return ResponseEntity.badRequest().build();
         }
     }
-
     private String generateRSVPForm(String token, Guest guest) {
+        return String.format("""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Wedding RSVP</title>
+                <style>
+                    body {
+                        font-family: 'Segoe UI', sans-serif;
+                        background: linear-gradient(135deg, #9CAF88 0%%, #ffffff 100%%);
+                        margin: 0;
+                        padding: 20px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        min-height: 100vh;
+                    }
+                    .rsvp-form {
+                        background: #ffffff;
+                        padding: 35px;
+                        border-radius: 12px;
+                        box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+                        max-width: 420px;
+                        width: 100%%;
+                        border-top: 6px solid #D4AF37;
+                    }
+                    h2 {
+                        text-align: center;
+                        color: #2F3E2F;
+                        margin-bottom: 20px;
+                        font-size: 24px;
+                        letter-spacing: 0.5px;
+                    }
+                    .clicks-info {
+                        background: #F4F6F3;
+                        padding: 10px;
+                        border-radius: 5px;
+                        margin-bottom: 15px;
+                        font-size: 13px;
+                        color: #6B705C;
+                        text-align: center;
+                    }
+                    .form-group {
+                        margin-bottom: 18px;
+                    }
+                    label {
+                        display: block;
+                        margin-bottom: 6px;
+                        font-weight: 600;
+                        color: #2F3E2F;
+                    }
+                    input, textarea, select {
+                        width: 100%%;
+                        padding: 10px;
+                        border: 1px solid #C7C7C7;
+                        border-radius: 6px;
+                        font-size: 14px;
+                        box-sizing: border-box;
+                        transition: border-color 0.3s ease;
+                    }
+                    input:focus, textarea:focus, select:focus {
+                        border-color: #9CAF88;
+                        outline: none;
+                    }
+                    .response-buttons {
+                        display: flex;
+                        gap: 12px;
+                        margin: 25px 0 10px;
+                    }
+                    .btn {
+                        flex: 1;
+                        padding: 12px;
+                        border: none;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-size: 15px;
+                        font-weight: bold;
+                        transition: all 0.3s ease;
+                    }
+                    .btn-accept {
+                        background: #9CAF88;
+                        color: white;
+                        border: 2px solid #9CAF88;
+                    }
+                    .btn-accept:hover {
+                        background: #8BAE72;
+                    }
+                    .btn-decline {
+                        background: white;
+                        color: #D4AF37;
+                        border: 2px solid #D4AF37;
+                    }
+                    .btn-decline:hover {
+                        background: #D4AF37;
+                        color: white;
+                    }
+                    .btn-download {
+                        display: inline-block;
+                        background: #D4AF37;
+                        color: white;
+                        padding: 12px 18px;
+                        border-radius: 6px;
+                        text-decoration: none;
+                        text-align: center;
+                        font-weight: bold;
+                    }
+                    .btn-download:hover {
+                        background: #c19a2c;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="rsvp-form">
+                    <h2>Wedding RSVP</h2>
+                    <div class="clicks-info">
+                        Link accessed %d times
+                    </div>
+                    <form id="rsvpForm">
+                        <div class="form-group">
+                            <label for="guestName">Full Name *</label>
+                            <input type="text" id="guestName" name="guestName" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phoneNumber">Phone Number</label>
+                            <input type="tel" id="phoneNumber" name="phoneNumber">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dietaryRestrictions">Dietary Restrictions</label>
+                            <textarea id="dietaryRestrictions" name="dietaryRestrictions" rows="3"
+                                      placeholder="Any allergies or dietary preferences..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="squad">Select Squad</label>
+                            <select id="squad" name="squad" required>
+                                <option value="">-- Select Squad --</option>
+                            </select>
+                        </div>
+
+                        <div class="response-buttons">
+                            <button type="button" class="btn btn-accept" onclick="submitResponse('accept')">
+                                ✓ Accept
+                            </button>
+                            <button type="button" class="btn btn-decline" onclick="submitResponse('decline')">
+                                ✗ Decline
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", async () => {
+                        try {
+                            const res = await fetch("/api/v1/wedding/squads");
+                            const squads = await res.json();
+
+                            const squadLabels = {
+                                "BRIDE": "Bride's Squad",
+                                "GROOM": "Groom's Squad"
+                            };
+
+                            const squadSelect = document.getElementById("squad");
+                            squads.forEach(s => {
+                                const option = document.createElement("option");
+                                option.value = s;
+                                option.text = squadLabels[s] || s;
+                                squadSelect.appendChild(option);
+                            });
+                        } catch (error) {
+                            console.error("Failed to load squads:", error);
+                        }
+                    });
+
+                    async function submitResponse(response) {
+                        const form = document.getElementById('rsvpForm');
+                        const formData = new FormData(form);
+
+                        const data = {
+                            guestName: formData.get('guestName'),
+                            email: formData.get('email'),
+                            phoneNumber: formData.get('phoneNumber'),
+                            dietaryRestrictions: formData.get('dietaryRestrictions'),
+                            squad: formData.get('squad'),
+                            response: response
+                        };
+
+                        try {
+                            const result = await fetch('/api/v1/wedding/rsvp/%s', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(data)
+                            });
+
+                            const responseData = await result.json();
+
+                            if (result.ok) {
+                                if (response === 'accept') {
+                                    document.body.innerHTML = `
+                                        <div class="rsvp-form">
+                                            <h2>Thank You!</h2>
+                                            <p>${responseData.message}</p>
+                                            <p><strong>Your Seat:</strong> ${responseData.seatNumber}</p>
+                                            <a href="${responseData.invitationCardUrl}" target="_blank" class="btn-download">
+                                                Download Your Invitation Card
+                                            </a>
+                                        </div>
+                                    `;
+                                } else {
+                                    document.body.innerHTML = `
+                                        <div class="rsvp-form">
+                                            <h2>Response Recorded</h2>
+                                            <p>${responseData.message}</p>
+                                        </div>
+                                    `;
+                                }
+                            } else {
+                                alert('Error: ' + responseData.message);
+                            }
+                        } catch (error) {
+                            alert('Error submitting RSVP: ' + error.message);
+                        }
+                    }
+                </script>
+            </body>
+            </html>
+            """, guest.getClickCount(), token);
+    }
+
+    private String generateRSVPFormx(String token, Guest guest) {
         return String.format("""
                 <!DOCTYPE html>
                 <html>

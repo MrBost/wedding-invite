@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Wedding RSVP</title>
+    <title>Oluwaseun & Opeyemi | Wedding RSVP</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap -->
@@ -10,39 +10,112 @@
 
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            background-color: #f8f8f5;
+            background-image: linear-gradient(135deg, rgba(156,175,136,0.15) 0%, rgba(255,255,255,0.8) 100%);
+            color: #333;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 15px;
+            padding: 30px;
         }
+
         .rsvp-form {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            max-width: 450px;
+            background-color: #fff;
+            padding: 40px 35px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            max-width: 480px;
             width: 100%;
+            border: 1px solid rgba(212,175,55,0.3);
         }
+
+        .rsvp-form h2 {
+            color: #9CAF88;
+            font-weight: 600;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .rsvp-form p.subtitle {
+            text-align: center;
+            color: #555;
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+        }
+
+        label.form-label {
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 1px solid #dcdcdc;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #9CAF88;
+            box-shadow: 0 0 0 0.15rem rgba(156,175,136,0.25);
+        }
+
+        .btn {
+            border-radius: 30px;
+            font-weight: 500;
+            padding: 10px 0;
+            transition: all 0.3s ease-in-out;
+        }
+
         .btn-accept {
-            background-color: #27ae60;
-            color: white;
+            background-color: #9CAF88;
+            color: #fff;
+            border: none;
         }
+
+        .btn-accept:hover {
+            background-color: #89a175;
+            box-shadow: 0 4px 12px rgba(156,175,136,0.4);
+        }
+
         .btn-decline {
-            background-color: #e74c3c;
-            color: white;
+            background-color: #D4AF37;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-decline:hover {
+            background-color: #b8962e;
+            box-shadow: 0 4px 12px rgba(212,175,55,0.4);
+        }
+
+        .thank-you {
+            text-align: center;
+            color: #9CAF88;
+        }
+
+        .rsvp-form a.btn {
+            margin-top: 10px;
+        }
+
+        /* Add a subtle gold divider */
+        .divider {
+            width: 80px;
+            height: 2px;
+            background-color: #D4AF37;
+            margin: 10px auto 25px;
+            border-radius: 2px;
         }
     </style>
 </head>
 <body>
-<div class="rsvp-form">
-    <h2 class="text-center mb-3">Wedding RSVP</h2>
 
-<!--    <div class="alert alert-info text-center mb-3">-->
-<!--        Link accessed <span th:text="${guest.clickCount}"></span> times-->
-<!--    </div>-->
+<div class="rsvp-form">
+    <h2>Oluwaseun & Opeyemi</h2>
+    <div class="divider"></div>
+    <p class="subtitle">We’re delighted to have you celebrate our special day with us</p>
 
     <form id="rsvpForm">
         <div class="mb-3">
@@ -50,10 +123,10 @@
             <input type="text" id="guestName" name="guestName" class="form-control" required>
         </div>
 
-        <div class="mb-3">
-            <label for="email" class="form-label">Email Address *</label>
-            <input type="email" id="email" name="email" class="form-control" required>
-        </div>
+<!--        <div class="mb-3">-->
+<!--            <label for="email" class="form-label">Email Address *</label>-->
+<!--            <input type="email" id="email" name="email" class="form-control" required>-->
+<!--        </div>-->
 
         <div class="mb-3">
             <label for="phoneNumber" class="form-label">Phone Number</label>
@@ -65,14 +138,14 @@
             <textarea id="dietaryRestrictions" name="dietaryRestrictions" class="form-control" rows="3"></textarea>
         </div>
 
-        <div class="mb-3">
-            <label for="squad" class="form-label">Select Squad</label>
+        <div class="mb-4">
+            <label for="squad" class="form-label">Select Squad *</label>
             <select id="squad" name="squad" class="form-select" required>
                 <option value="">-- Select Squad --</option>
             </select>
         </div>
 
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-3">
             <button type="button" class="btn btn-accept w-50" onclick="submitResponse('accept')">
                 ✓ Accept
             </button>
@@ -91,8 +164,8 @@
             const squads = await res.json();
 
             const squadLabels = {
-                "BRIDE": "Bride's Squad",
-                "GROOM": "Groom's Squad"
+                "BRIDE": "Bride’s Squad",
+                "GROOM": "Groom’s Squad"
             };
 
             const squadSelect = document.getElementById("squad");
@@ -121,30 +194,31 @@
         };
 
         try {
-            const result = await fetch('/api/v1/invite/rsvp/' + token,
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
+            const result = await fetch('/api/v1/invite/rsvp/' + token, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
 
             const responseData = await result.json();
 
             if (result.ok) {
                 if (response === 'accept') {
                     document.body.innerHTML = `
-                        <div class="rsvp-form text-center">
+                        <div class="rsvp-form thank-you">
                             <h2>Thank You!</h2>
+                            <div class="divider"></div>
                             <p>${responseData.message}</p>
                             <p><strong>Your Seat:</strong> ${responseData.seatNumber}</p>
-                            <a href="${responseData.invitationCardUrl}" target="_blank" class="btn btn-accept w-100 mt-3">
+                            <a href="${responseData.invitationCardUrl}" target="_blank" class="btn btn-accept w-100">
                                 Generate Invitation Card
                             </a>
                         </div>`;
                 } else {
                     document.body.innerHTML = `
-                        <div class="rsvp-form text-center">
+                        <div class="rsvp-form thank-you">
                             <h2>Response Recorded</h2>
+                            <div class="divider"></div>
                             <p>${responseData.message}</p>
                         </div>`;
                 }
@@ -156,18 +230,5 @@
         }
     }
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script>
-    function downloadAsImage() {
-        const confirmationDiv = document.querySelector(".rsvp-form");
-        html2canvas(confirmationDiv).then(canvas => {
-            const link = document.createElement("a");
-            link.href = canvas.toDataURL("image/png");
-            link.download = "rsvp-confirmation.png";
-            link.click();
-        });
-    }
-</script>
-
 </body>
 </html>

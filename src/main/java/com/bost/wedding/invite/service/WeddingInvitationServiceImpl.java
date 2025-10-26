@@ -22,9 +22,8 @@ public class WeddingInvitationServiceImpl implements WeddingInvitationService{
     @Value("${wedding.invitation.base-url:http://localhost:1221}")
     private String baseUrl;
     @Override
-    public Map<Integer, String> generateInvitationLinks(int numberOfGuests) {
-        List<String> invitationLinks = new ArrayList<>();
-        Map<Integer, String> invitationLinkMap = new HashMap<>();
+    public Map<Integer, Object> generateInvitationLinks(int numberOfGuests) {
+        Map<Integer, Object> invitationLinkMap = new HashMap<>();
         for (int i = 0; i < numberOfGuests; i++) {
             String token = generateUniqueToken();
             Guest guest = new Guest();
@@ -34,14 +33,29 @@ public class WeddingInvitationServiceImpl implements WeddingInvitationService{
             guestRepository.save(guest);
 
             String inviteLink = baseUrl + "/api/v1/wedding/invite/" + token;
-//            invitationLinks.add(inviteLink);
-            invitationLinkMap.put(i, inviteLink);
+            invitationLinkMap.put(i, bcMsg(inviteLink));
 
             log.info("Generated invitation link: {}", inviteLink);
         }
 
         return invitationLinkMap;
     }
+
+    private String bcMsg(String link) {
+        return """
+            ✨ Love is in the Air (and the Pixels)! ✨
+            Oluwaseun 💍 Opeyemi
+
+            We’re tying the knot on December 20th, 2025, and your presence would mean the world to us.
+
+            In celebration of love and care for our planet, we’re going digital to reduce waste and leave only memories, not footprints 🌿.
+
+            Click below to RSVP and share in our joy as we begin this beautiful journey together 💚
+            %s
+            """.formatted(link)
+                .replace("\n", "\n\n");
+    }
+
 
     @Override
     public Guest trackLinkClick(String inviteToken) {
@@ -71,7 +85,6 @@ public class WeddingInvitationServiceImpl implements WeddingInvitationService{
             throw new RuntimeException("Invite link already used by YOU");
         }
         guest.setGuestName(request.getGuestName());
-        guest.setEmail(request.getEmail());
         guest.setPhoneNumber(request.getPhoneNumber());
         guest.setDietaryRestrictions(request.getDietaryRestrictions());
         guest.setRespondedAt(LocalDateTime.now());
