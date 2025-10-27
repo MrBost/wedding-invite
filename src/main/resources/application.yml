@@ -11,8 +11,8 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
   datasource:
-#    url: jdbc:postgresql://dpg-d2vk878dl3ps7399fkhg-a.oregon-postgres.render.com/rsvp_6yer
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:rsvp}?useEncoding=true&characterEncoding=UTF-8
+    url: jdbc:postgresql://dpg-d3vrrfumcj7s73f9n74g-a.oregon-postgres.render.com/bost
+#    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:rsvp}?useEncoding=true&characterEncoding=UTF-8
     hikari:
       username: ${DB_USER_NAME:postgres}
       password: ${DB_PASSWORD:1234}
@@ -28,7 +28,7 @@ wedding:
       template-path: ./templates
       output-path: ./generated-cards
     venue:
-      max-guests: 100
+      max-guests: 120
       seats-per-table: 10
 
 logging:
