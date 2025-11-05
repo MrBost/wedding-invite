@@ -67,6 +67,13 @@ public class InvitationCardService {
             align-items: center;
             min-height: 100vh;
         }
+        .divider {
+            width: 100%%;
+            height: 2px;
+            background-color: #D4AF37;
+            margin: 10px auto 25px;
+            border-radius: 2px;
+        }
         .invitation-card {
             background: #fff;
             padding: 50px 30px;
@@ -224,12 +231,13 @@ public class InvitationCardService {
         </div>
 
         <div class="guest-name">%s</div>
+        <div class="divider"></div>
 
         <div class="wedding-details">
             <p><strong>Saturday, December 20, 2025</strong></p>
             <p class="time">10:00 AM – 2:00 PM</p>
             <p><strong>Advans Event Special</strong></p>
-            <p><strong>44 Ayodele Close, Off Allen Avenue, Ikeja, Lagos</strong></p>
+            <p><strong>44 Ayodele Close, off Allen Avenue, Ikeja, Lagos</strong></p>
         </div>
 
         <div class="seat-info">Reserved Seat: %s</div>
@@ -237,7 +245,7 @@ public class InvitationCardService {
         <p>We would be deeply honored by your presence<br> as we unite in love and joy.</p>
 
         <div class="footer">
-            <p class="invitation-note">STRICTLY BY INVITATION — NO PLUS ONES DUE TO HALL CAPACITY</p>
+            <p class="invitation-note">STRICTLY BY INVITATION — No plus-ones due to venue capacity</p>
             <h2><strong>NO RECEPTION</strong></h2>
             <p>Generated on: %s</p>
         </div>
